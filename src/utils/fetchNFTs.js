@@ -25,14 +25,8 @@ const getEndpoint = (chain) => {
         case "Ethereum":
             return process.env.REACT_APP_ALCHEMY_ETHEREUM_ENDPOINT
             break;
-        case "Polygon":
-            return process.env.REACT_APP_ALCHEMY_POLYGON_ENDPOINT
-            break;
         case "Mumbai":
             return process.env.REACT_APP_ALCHEMY_MUMBAI_ENDPOINT
-            break;
-        case "Rinkeby":
-            return process.env.REACT_APP_ALCHEMY_RINKEBY_ENDPOINT
             break;
     }
 }

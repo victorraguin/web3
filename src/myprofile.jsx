@@ -27,7 +27,7 @@ const MyProfile = () => {
                     <div><h1>Loading...</h1></div> :
                     accountData ?
                         <div>
-                            <header className=' py-40  mb-12 w-full flex flex-col items-center justify-center alchemy text-white '>
+                            <header className=' py-40 w-full flex flex-col items-center justify-center alchemy text-white '>
                                 <ProfileImage width={"250"} />
                                 <div className='flex flex-col items-center'>
                                     <div className='flex items-center'>
@@ -36,19 +36,19 @@ const MyProfile = () => {
                                     </div>
 
                                     <div className='mt-4'>
-                                        <p>NFTs:<span>{NFTs ? NFTs.length : 0}</span></p>
+                                        <p>NFTs : <span>{NFTs ? NFTs.length : 0}</span></p>
                                     </div>
                                     <ChainSelector setBlockchain={setBlockchain} chain={chain} />
                                 </div>
                             </header>
-                            <div className='flex flex-wrap justify-center'>
+                            <div className='py-24  w-full alchemy flex flex-wrap justify-center'>
                                 {
                                     NFTs ? NFTs.map(NFT => {
 
                                         return (
                                             <NftCard key={NFT.value.id + NFT.value.contractAddress} image={NFT.value.image} id={NFT.value.id} title={NFT.value.title} description={NFT.value.description} address={NFT.value.contractAddress} attributes={NFT.value.attributes}></NftCard>
                                         )
-                                    }) : <div>No NFTs found</div>
+                                    }) : <div className="text-2xl text-white font-bold font-body">No NFTs</div>
                                 }
                             </div>
                         </div>

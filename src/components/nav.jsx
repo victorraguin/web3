@@ -15,15 +15,8 @@ const Nav = () => {
                 {
                     accountData ?
                         <div className='flex items-center'>
-                            <div className='flex mr-4 text-white gap-4'>
-                                <Link className="mr-2 " to="/explore">Explore</Link>
-
-                               
-                                <div className="flex items-center">
-                                    <p className=''>{`${[...accountData.address].splice(0, 6).join("")}...${[...accountData.address].splice(37).join("")}`}</p>
-                                    <ClipboardIcon onClick={() => navigator.clipboard.writeText(accountData.address)} className="h-4 w-4 -mt-2 text-slate-200 cursor-pointer"></ClipboardIcon>
-                                </div>
-
+                            <div className='flex mr-4 gap-4'>
+                                <Link className="py-2 px-4 rounded-lg bg-white ml-1" to="/explore">Explore</Link>
                             </div>
                             <button className=" py-2 px-4 rounded-lg bg-white mr-4" onClick={() => {
                                 disconnect()
@@ -31,7 +24,10 @@ const Nav = () => {
                              <Link to="/myprofile"> <ProfileImage width={"63"} rounded={true}/></Link>
                            
                         </div>
-                        : <Link className=" py-2 px-4 rounded-lg bg-white" to={"/"}>Connect</Link>
+                        : <div className="flex items-center">
+                        <Link className=" py-2 px-4 rounded-lg bg-white" to={"/"}>Home</Link>
+                        <Link className="py-2 px-4 rounded-lg bg-white ml-1" to="/explore">Explore</Link> 
+                        </div >
                 }
             </div>
             <Routes>

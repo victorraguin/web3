@@ -6,5 +6,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,500;1,400&display=swap');
 
 .alchemy {
-    background: linear-gradient(267.45deg,#05d5ff -34.23%,#53f 99.39%)
+    background-image: radial-gradient( circle 610px at 5.2% 51.6%,  rgba(5,8,114,1) 0%, rgba(7,3,53,1) 97.5% );
 }
