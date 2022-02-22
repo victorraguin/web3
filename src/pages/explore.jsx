@@ -1,16 +1,24 @@
 import { useState } from 'react';
+import ChainSelector from '../components/ChainSelector';
 import NftCard from '../components/nftcard';
 import {fetchNFTs} from '../utils/fetchNFTs';
+
+
+
 
 const Explore = () => {
 
     const [owner, setOwner] = useState("")
     const [contractAddress, setContractAddress] = useState("")
     const [NFTs, setNFTs] = useState("")
+    const [chain, setBlockchain] = useState("Ethereum")
+
+
+
 
     return (
         <div>
-            <header className=' py-24 w-full   alchemy'>
+            <header className=' py-24 w-full h-full alchemy'>
                 <div className='flex-grow flex justify-end mr-12 mb-12'>
                 </div>
                 <div className='flex flex-col items-center mb-12'>
@@ -18,27 +26,28 @@ const Explore = () => {
                         <h1 className='text-5xl  font-bold font-body mb-2'>
                             Alchemy NFT Explorer
                         </h1>
-                        <p>An inspector to find NFTs by owner and contract address </p>
-                        <p>NFT Wallet Example: 0x8bc47be1e3abbaba182069c89d08a61fa6c2b292</p>
+                        <p>Multichain inspector to find NFTs by owner and contract address </p>
+                        <p>(Example) : Women Rise, Ethereum Wallet : 0x7ea79bad324579fac7a7645c62fe8c60a8b73055</p>
                     </div>
                     <div className='flex flex-col items-center justify-center mb-4 w-2/6 gap-y-2 '>
                         <input className="border rounded-sm focus:outline-none py-2 px-3 w-full" value={owner} onChange={(e) => setOwner(e.target.value)} placeholder='Insert your wallet address'></input>
-                        <input className="focus:outline-none rounded-sm py-2 px-3 w-full" value={contractAddress} onChange={(e) => setContractAddress(e.target.value)} placeholder='Insert NFT Contract address (optional)'></input>
+                        <input className="focus:outline-none rounded-sm py-2 px-3 w-full" value={contractAddress} onChange={(e) => setContractAddress(e.target.value)} placeholder='Insert NFT address (optional)'></input>
+                        <ChainSelector setBlockchain={setBlockchain} chain={chain}/>
                     </div>
                     <div className='w-2/6 flex justify-center'>
-                    <button className='py-3 bg-white rounded-sm w-full hover:bg-slate-100' onClick={() => {fetchNFTs(owner, contractAddress, setNFTs)}}>Search</button>
+                        <button className='py-3 bg-white rounded-sm w-full hover:bg-slate-100' onClick={() => {fetchNFTs(owner, setNFTs, chain, contractAddress)}}>Search</button>
                     </div>
                 </div>
             </header>
 
-            <section className='alchemy flex flex-wrap justify-center'>
+            <section className='alchemy w-full h-full flex flex-wrap justify-center'>
                 {
                     NFTs ? NFTs.map(NFT => {
 
                         return (
-                           <NftCard key={NFT.value.id + NFT.value.contractAddress} image={NFT.value.image} id={NFT.value.id} title={NFT.value.title} description={NFT.value.description} address={NFT.value.contractAddress} attributes={NFT.value.attributes}></NftCard>
+                           <NftCard key={NFT.value.id + NFT.value.  contractAddress} image={NFT.value.image} id={NFT.value.id} title={NFT.value.title} description={NFT.value.description} address={NFT.value.contractAddress} attributes={NFT.value.attributes}></NftCard>
                         )
-                    }) : <div>No NFTs found</div>
+                    }) : <div className="h-full text-white">No NFTs found</div>
                 }
             </section>
         </div>

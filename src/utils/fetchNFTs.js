@@ -1,34 +1,61 @@
-// Go to www.alchemy.com and create an account to grab your own api key!
-const apiKey = "-7Q7tMjqtuGARfCpVEGzjqcvSNg_uImU";
-const endpoint = `https://eth-mainnet.alchemyapi.io/v2/${apiKey}`;
-
-const getAddressNFTs = async (owner, contractAddress, retryAttempt) => {
-    if (retryAttempt === 5) {
-        return;
-    }
+const getAddressNFTs = async (endpoint, owner, contractAddress) => {
     if (owner) {
         let data;
         try {
             if (contractAddress) {
                 data = await fetch(`${endpoint}/getNFTs?owner=${owner}&contractAddresses%5B%5D=${contractAddress}`).then(data => data.json())
+
             } else {
+                // data = await fetch(`${endpoint}/v1/getNFTs?owner=${owner}`).then(data => data.json())
                 data = await fetch(`${endpoint}/getNFTs?owner=${owner}`).then(data => data.json())
+
             }
+            // console.log("GETNFTS: ", data)
         } catch (e) {
-            getAddressNFTs(endpoint, owner, contractAddress, retryAttempt+1)
+            getAddressNFTs(endpoint, owner, contractAddress)
         }
 
-        // NFT token IDs basically
         return data
     }
 }
 
-const getNFTsMetadata = async (NFTS) => {
+const getEndpoint = (chain) => {
+    switch (chain) {
+        case "Ethereum":
+            return 'https://eth-mainnet.alchemyapi.io/v2/-7Q7tMjqtuGARfCpVEGzjqcvSNg_uImU'
+            break;
+        case "Polygon":
+            return 'https://polygon-mainnet.g.alchemy.com/v2/JJEOTu7ambTIjzYNUvtJLCJrST5-bxPo'
+            break;
+    }
+}
+
+const fetchNFTs = async (owner, setNFTs, chain, contractAddress) => {
+    let endpoint = getEndpoint(chain)
+    console.log('Endpoint :' + endpoint)
+    const data = await getAddressNFTs(endpoint, owner, contractAddress)
+    console.log(data);
+    if (data.ownedNfts.length) {
+        const NFTs = await getNFTsMetadata(data.ownedNfts, endpoint)
+        console.log("NFTS metadata", NFTs)
+        const NFTsSlice = NFTs.slice(0,18)
+        let fullfilledNFTs = NFTsSlice.filter(NFT => NFT.status == "fulfilled")
+        console.log("NFTS", fullfilledNFTs)
+        setNFTs(fullfilledNFTs)
+     } else {
+        setNFTs(null)
+    }
+
+}
+
+
+const getNFTsMetadata = async (NFTS, endpoint) => {
     const NFTsMetadata = await Promise.allSettled(NFTS.map(async (NFT) => {
         const metadata = await fetch(`${endpoint}/getNFTMetadata?contractAddress=${NFT.contract.address}&tokenId=${NFT.id.tokenId}`,).then(data => data.json())
         let imageUrl;
-        if (metadata.media[0].uri.gateway.length) {
-            imageUrl = metadata.media[0].uri.gateway
+        console.log("metadata", metadata)
+        if (metadata.media[0].gateway.length) {
+            imageUrl = metadata.media[0].gateway
         } else {
             imageUrl = "https://via.placeholder.com/500"
         }
@@ -46,17 +73,5 @@ const getNFTsMetadata = async (NFTS) => {
     return NFTsMetadata
 }
 
-const fetchNFTs = async (owner, contractAddress, setNFTs) => {
-    const data = await getAddressNFTs(owner, contractAddress)
-    if (data.ownedNfts.length) {
-        const NFTs = await getNFTsMetadata(data.ownedNfts)
-        const sliceNFT = NFTs.slice(0,9)
-        console.log(sliceNFT)
-        let fullfilledNFTs = sliceNFT.filter(NFT => NFT.status === "fulfilled")
-        setNFTs(fullfilledNFTs)
-    } else {
-        setNFTs(null)
-    }
-}
 
-export {fetchNFTs};
+export { fetchNFTs, getAddressNFTs }
