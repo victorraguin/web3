@@ -1,67 +1,43 @@
+// Go to www.alchemy.com and create an account to grab your own api key!
+const apiKey = "-7Q7tMjqtuGARfCpVEGzjqcvSNg_uImU";
+const endpoint = `https://eth-mainnet.alchemyapi.io/v2/${apiKey}`;
 
-const getAddressNFTs = async (endpoint, owner, contractAddress) => {
+const getAddressNFTs = async (owner, contractAddress, retryAttempt) => {
+    if (retryAttempt === 5) {
+        return;
+    }
     if (owner) {
         let data;
         try {
             if (contractAddress) {
-                data = await fetch(`${endpoint}/v1/getNFTs?owner=${owner}&contractAddresses%5B%5D=${contractAddress}`).then(data => data.json())
-
+                data = await fetch(`${endpoint}/getNFTs?owner=${owner}&contractAddresses%5B%5D=${contractAddress}`).then(data => data.json())
             } else {
-                // data = await fetch(`${endpoint}/v1/getNFTs?owner=${owner}`).then(data => data.json())
-                data = await fetch(`${endpoint}/v1/getNFTs?owner=${owner}`).then(data => data.json())
-
+                data = await fetch(`${endpoint}/getNFTs?owner=${owner}`).then(data => data.json())
             }
-            // console.log("GETNFTS: ", data)
         } catch (e) {
-            getAddressNFTs(endpoint, owner, contractAddress)
+            getAddressNFTs(endpoint, owner, contractAddress, retryAttempt+1)
         }
 
+        // NFT token IDs basically
         return data
     }
 }
 
-const getEndpoint = (chain) => {
-    switch (chain) {
-        case "Ethereum":
-            return process.env.REACT_APP_ALCHEMY_ETHEREUM_ENDPOINT
-            break;
-        case "Mumbai":
-            return process.env.REACT_APP_ALCHEMY_MUMBAI_ENDPOINT
-            break;
-    }
-}
-
-const fetchNFTs = async (owner, setNFTs, chain, contractAddress) => {
-    let endpoint = getEndpoint(chain)
-    const data = await getAddressNFTs(endpoint, owner, contractAddress)
-    if (data.ownedNfts.length) {
-        const NFTs = await getNFTsMetadata(data.ownedNfts, endpoint)
-        console.log("NFTS metadata", NFTs)
-        let fullfilledNFTs = NFTs.filter(NFT => NFT.status == "fulfilled")
-        console.log("NFTS", fullfilledNFTs)
-        setNFTs(fullfilledNFTs)
-    } else {
-        setNFTs(null)
-    }
-
-}
-
-
-const getNFTsMetadata = async (NFTS, endpoint) => {
+const getNFTsMetadata = async (NFTS) => {
     const NFTsMetadata = await Promise.allSettled(NFTS.map(async (NFT) => {
-        const metadata = await fetch(`${endpoint}/v1/getNFTMetadata?contractAddress=${NFT.contract.address}&tokenId=${NFT.id.tokenId}`,).then(data => data.json())
-        let image;
+        const metadata = await fetch(`${endpoint}/getNFTMetadata?contractAddress=${NFT.contract.address}&tokenId=${NFT.id.tokenId}`,).then(data => data.json())
+        let imageUrl;
         console.log("metadata", metadata)
         if (metadata.media[0].uri.gateway.length) {
-            image = metadata.media[0].uri.gateway
+            imageUrl = metadata.media[0].uri.gateway
         } else {
-            image = "https://via.placeholder.com/500"
+            imageUrl = "https://via.placeholder.com/500"
         }
 
         return {
             id: NFT.id.tokenId,
             contractAddress: NFT.contract.address,
-            image,
+            image: imageUrl,
             title: metadata.metadata.name,
             description: metadata.metadata.description,
             attributes: metadata.metadata.attributes
@@ -71,5 +47,15 @@ const getNFTsMetadata = async (NFTS, endpoint) => {
     return NFTsMetadata
 }
 
+const fetchNFTs = async (owner, contractAddress, setNFTs) => {
+    const data = await getAddressNFTs(owner, contractAddress)
+    if (data.ownedNfts.length) {
+        const NFTs = await getNFTsMetadata(data.ownedNfts)
+        let fullfilledNFTs = NFTs.filter(NFT => NFT.status == "fulfilled")
+        setNFTs(fullfilledNFTs)
+    } else {
+        setNFTs(null)
+    }
+}
 
-export { fetchNFTs, getAddressNFTs }
+export {fetchNFTs}; 
