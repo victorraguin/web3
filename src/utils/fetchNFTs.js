@@ -27,7 +27,6 @@ const getNFTsMetadata = async (NFTS) => {
     const NFTsMetadata = await Promise.allSettled(NFTS.map(async (NFT) => {
         const metadata = await fetch(`${endpoint}/getNFTMetadata?contractAddress=${NFT.contract.address}&tokenId=${NFT.id.tokenId}`,).then(data => data.json())
         let imageUrl;
-        console.log("metadata", metadata)
         if (metadata.media[0].uri.gateway.length) {
             imageUrl = metadata.media[0].uri.gateway
         } else {
@@ -51,7 +50,9 @@ const fetchNFTs = async (owner, contractAddress, setNFTs) => {
     const data = await getAddressNFTs(owner, contractAddress)
     if (data.ownedNfts.length) {
         const NFTs = await getNFTsMetadata(data.ownedNfts)
-        let fullfilledNFTs = NFTs.filter(NFT => NFT.status == "fulfilled")
+        const sliceNFT = NFTs.slice(0,9)
+        console.log(sliceNFT)
+        let fullfilledNFTs = sliceNFT.filter(NFT => NFT.status == "fulfilled")
         setNFTs(fullfilledNFTs)
     } else {
         setNFTs(null)

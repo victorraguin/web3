@@ -10,7 +10,7 @@ const Explore = () => {
 
     return (
         <div>
-            <header className=' py-24  mb-12 w-full   alchemy'>
+            <header className=' py-24 w-full   alchemy'>
                 <div className='flex-grow flex justify-end mr-12 mb-12'>
                 </div>
                 <div className='flex flex-col items-center mb-12'>
@@ -19,6 +19,7 @@ const Explore = () => {
                             Alchemy NFT Explorer
                         </h1>
                         <p>An inspector to find NFTs by owner and contract address </p>
+                        <p>NFT Wallet Example: 0x8bc47be1e3abbaba182069c89d08a61fa6c2b292</p>
                     </div>
                     <div className='flex flex-col items-center justify-center mb-4 w-2/6 gap-y-2 '>
                         <input className="border rounded-sm focus:outline-none py-2 px-3 w-full" value={owner} onChange={(e) => setOwner(e.target.value)} placeholder='Insert your wallet address'></input>
@@ -30,7 +31,7 @@ const Explore = () => {
                 </div>
             </header>
 
-            <section className='flex flex-wrap justify-center'>
+            <section className='alchemy flex flex-wrap justify-center'>
                 {
                     NFTs ? NFTs.map(NFT => {
 
