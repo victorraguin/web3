@@ -58,4 +58,4 @@ const fetchNFTs = async (owner, contractAddress, setNFTs) => {
     }
 }
 
-export {fetchNFTs}; 
+export {fetchNFTs};
