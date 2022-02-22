@@ -52,7 +52,7 @@ const fetchNFTs = async (owner, contractAddress, setNFTs) => {
         const NFTs = await getNFTsMetadata(data.ownedNfts)
         const sliceNFT = NFTs.slice(0,9)
         console.log(sliceNFT)
-        let fullfilledNFTs = sliceNFT.filter(NFT => NFT.status == "fulfilled")
+        let fullfilledNFTs = sliceNFT.filter(NFT => NFT.status === "fulfilled")
         setNFTs(fullfilledNFTs)
     } else {
         setNFTs(null)
